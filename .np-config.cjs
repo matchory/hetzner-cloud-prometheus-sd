@@ -1,0 +1,16 @@
+module.exports = {
+    anyBranch:    false,
+    branch:       'main',
+    cleanup:      true,
+    tests:        false,
+    yolo:         false,
+    publish:      true,
+    preview:      false,
+    tag:          'latest',
+    yarn:         true,
+    contents:     './dist/',
+    releaseDraft: true,
+    testScript:   'test',
+    '2fa':        true,
+    message:      'v%s',
+};
