@@ -1,0 +1,47 @@
+import process from 'node:process';
+import client from 'prom-client';
+import yargs from 'yargs/yargs';
+import { Config, options } from './components/Config.mjs';
+import { DataStore } from './components/DataStore.mjs';
+import { DiscoveryWorker } from './components/DiscoveryWorker.mjs';
+import { WebServer } from './components/WebServer.mjs';
+import { setup } from './logging.mjs';
+const argv = process.argv.slice(2);
+const input = yargs(argv)
+    .options(options)
+    .strict()
+    .parseSync();
+main(input).catch(error => console.error('Unexpected error:', error));
+async function main(input) {
+    const config = new Config(input);
+    try {
+        config.validate();
+    }
+    catch (error) {
+        if (!(error instanceof Error)) {
+            throw error;
+        }
+        console.error(`Invalid configuration: ${error.message}`);
+        process.exit(2);
+    }
+    setup(config.logLevel);
+    client.collectDefaultMetrics({});
+    const dataStore = new DataStore(config);
+    const worker = new DiscoveryWorker(config, dataStore);
+    const server = new WebServer(config, dataStore);
+    try {
+        await Promise.all([
+            server.start(),
+            worker.start(),
+        ]);
+    }
+    catch (error) {
+        if (!(error instanceof Error)) {
+            console.error(`main\t\tUnexpected error: ${error}:`, { error });
+            process.exit(1);
+        }
+        console.error(`main\t\tStartup error: ${error.message}`);
+        process.exit(1);
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXgubWpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL2luZGV4Lm10cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLE9BQU8sTUFBTSxjQUFjLENBQUM7QUFDbkMsT0FBTyxNQUFNLE1BQU0sYUFBYSxDQUFDO0FBQ2pDLE9BQU8sS0FBSyxNQUFNLGFBQWEsQ0FBQztBQUNoQyxPQUFPLEVBQUUsTUFBTSxFQUFFLE9BQU8sRUFBZSxNQUFNLHlCQUF5QixDQUFDO0FBQ3ZFLE9BQU8sRUFBRSxTQUFTLEVBQUUsTUFBTSw0QkFBNEIsQ0FBQztBQUN2RCxPQUFPLEVBQUUsZUFBZSxFQUFFLE1BQU0sa0NBQWtDLENBQUM7QUFFbkUsT0FBTyxFQUFFLFNBQVMsRUFBRSxNQUFNLDRCQUE0QixDQUFDO0FBQ3ZELE9BQU8sRUFBRSxLQUFLLEVBQUUsTUFBTSxlQUFlLENBQUM7QUFFdEMsTUFBTSxJQUFJLEdBQWEsT0FBTyxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUUsQ0FBQyxDQUFFLENBQUM7QUFDL0MsTUFBTSxLQUFLLEdBQVksS0FBSyxDQUFFLElBQUksQ0FBRTtLQUNuQyxPQUFPLENBQUUsT0FBTyxDQUFFO0tBQ2xCLE1BQU0sRUFBRTtLQUNSLFNBQVMsRUFBRSxDQUFDO0FBRWIsSUFBSSxDQUFFLEtBQUssQ0FBRSxDQUFDLEtBQUssQ0FBRSxLQUFLLENBQUMsRUFBRSxDQUFDLE9BQU8sQ0FBQyxLQUFLLENBQUUsbUJBQW1CLEVBQUUsS0FBSyxDQUFFLENBQUUsQ0FBQztBQUU1RSxLQUFLLFVBQVUsSUFBSSxDQUFFLEtBQWtCO0lBQ25DLE1BQU0sTUFBTSxHQUFHLElBQUksTUFBTSxDQUFFLEtBQUssQ0FBRSxDQUFDO0lBRW5DLElBQUk7UUFDQSxNQUFNLENBQUMsUUFBUSxFQUFFLENBQUM7S0FDckI7SUFBQyxPQUFRLEtBQUssRUFBRztRQUNkLElBQUssQ0FBQyxDQUFFLEtBQUssWUFBWSxLQUFLLENBQUUsRUFBRztZQUMvQixNQUFNLEtBQUssQ0FBQztTQUNmO1FBRUQsT0FBTyxDQUFDLEtBQUssQ0FBRSwwQkFBMkIsS0FBSyxDQUFDLE9BQVEsRUFBRSxDQUFFLENBQUM7UUFDN0QsT0FBTyxDQUFDLElBQUksQ0FBRSxDQUFDLENBQUUsQ0FBQztLQUNyQjtJQUVELEtBQUssQ0FBRSxNQUFNLENBQUMsUUFBUSxDQUFFLENBQUM7SUFDekIsTUFBTSxDQUFDLHFCQUFxQixDQUFFLEVBQUUsQ0FBRSxDQUFDO0lBRW5DLE1BQU0sU0FBUyxHQUFHLElBQUksU0FBUyxDQUFZLE1BQU0sQ0FBRSxDQUFDO0lBQ3BELE1BQU0sTUFBTSxHQUFNLElBQUksZUFBZSxDQUFFLE1BQU0sRUFBRSxTQUFTLENBQUUsQ0FBQztJQUMzRCxNQUFNLE1BQU0sR0FBTSxJQUFJLFNBQVMsQ0FBRSxNQUFNLEVBQUUsU0FBUyxDQUFFLENBQUM7SUFFckQsSUFBSTtRQUNBLE1BQU0sT0FBTyxDQUFDLEdBQUcsQ0FBRTtZQUNmLE1BQU0sQ0FBQyxLQUFLLEVBQUU7WUFDZCxNQUFNLENBQUMsS0FBSyxFQUFFO1NBQ2pCLENBQUUsQ0FBQztLQUNQO0lBQUMsT0FBUSxLQUFLLEVBQUc7UUFDZCxJQUFLLENBQUMsQ0FBRSxLQUFLLFlBQVksS0FBSyxDQUFFLEVBQUc7WUFDL0IsT0FBTyxDQUFDLEtBQUssQ0FBRSw2QkFBOEIsS0FBTSxHQUFHLEVBQUUsRUFBRSxLQUFLLEVBQUUsQ0FBRSxDQUFDO1lBQ3BFLE9BQU8sQ0FBQyxJQUFJLENBQUUsQ0FBQyxDQUFFLENBQUM7U0FDckI7UUFFRCxPQUFPLENBQUMsS0FBSyxDQUFFLDBCQUEyQixLQUFLLENBQUMsT0FBUSxFQUFFLENBQUUsQ0FBQztRQUM3RCxPQUFPLENBQUMsSUFBSSxDQUFFLENBQUMsQ0FBRSxDQUFDO0tBQ3JCO0FBQ0wsQ0FBQyJ9

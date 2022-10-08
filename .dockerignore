@@ -1,0 +1,7 @@
+/.idea/
+/node_modules/
+/dist/
+.gitignore
+yarn-error.log
+README.md
+LICENSE

@@ -1,0 +1,24 @@
+import { EventEmitter } from 'events';
+export class DataStore extends EventEmitter {
+    config;
+    data = null;
+    constructor(config) {
+        super();
+        this.config = config;
+    }
+    getServers() {
+        return this.data;
+    }
+    async updateServers(data) {
+        await this.persist(data);
+        this.emit('update', { data });
+    }
+    async persist(data) {
+        this.data = data;
+        this.emit('persist', { data });
+    }
+    async restore() {
+        // no-op
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRGF0YVN0b3JlLm1qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jb21wb25lbnRzL0RhdGFTdG9yZS5tdHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLFlBQVksRUFBRSxNQUFNLFFBQVEsQ0FBQztBQUd0QyxNQUFNLE9BQU8sU0FBdUIsU0FBUSxZQUFZO0lBRXBELE1BQU0sQ0FBUztJQUVmLElBQUksR0FBYSxJQUFJLENBQUM7SUFFdEIsWUFBYSxNQUFjO1FBQ3ZCLEtBQUssRUFBRSxDQUFDO1FBRVIsSUFBSSxDQUFDLE1BQU0sR0FBRyxNQUFNLENBQUM7SUFDekIsQ0FBQztJQUVNLFVBQVU7UUFDYixPQUFPLElBQUksQ0FBQyxJQUFJLENBQUM7SUFDckIsQ0FBQztJQUVNLEtBQUssQ0FBQyxhQUFhLENBQUUsSUFBTztRQUMvQixNQUFNLElBQUksQ0FBQyxPQUFPLENBQUUsSUFBSSxDQUFFLENBQUM7UUFDM0IsSUFBSSxDQUFDLElBQUksQ0FBRSxRQUFRLEVBQUUsRUFBRSxJQUFJLEVBQUUsQ0FBRSxDQUFDO0lBQ3BDLENBQUM7SUFFUyxLQUFLLENBQUMsT0FBTyxDQUFFLElBQU87UUFDNUIsSUFBSSxDQUFDLElBQUksR0FBRyxJQUFJLENBQUM7UUFDakIsSUFBSSxDQUFDLElBQUksQ0FBRSxTQUFTLEVBQUUsRUFBRSxJQUFJLEVBQUUsQ0FBRSxDQUFDO0lBQ3JDLENBQUM7SUFFTSxLQUFLLENBQUMsT0FBTztRQUNoQixRQUFRO0lBQ1osQ0FBQztDQUNKIn0=
