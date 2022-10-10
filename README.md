@@ -11,7 +11,7 @@ The easiest option will be using our Docker image
 [`matchory/prometheus-hetzner-sd`](https://hub.docker.com/matchory/prometheus-hetzner-sd):
 
 ```bash
-docker run -p 127.0.0.1:7764:7764 matchory/prometheus-hetzner-sd --hetzner-api-token $HETZNER_API_TOKEN
+docker run -p 127.0.0.1:7764:7764 matchory/hetzner-cloud-prometheus-sd --hetzner-api-token $HETZNER_API_TOKEN
 ```
 
 You can also install the npm package globally:
