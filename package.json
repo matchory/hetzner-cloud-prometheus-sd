@@ -37,7 +37,7 @@
         "dev": "tsc && bin/hetzner-sd",
         "serve": "node dist/",
         "check": "tsc --noEmit --pretty",
-        "release": "np"
+        "release": "npx np@latest"
     },
     "publishConfig": {
         "access": "public"
