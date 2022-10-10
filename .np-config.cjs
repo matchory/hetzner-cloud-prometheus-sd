@@ -8,7 +8,7 @@ module.exports = {
     preview:      false,
     tag:          'latest',
     yarn:         true,
-    contents:     './dist/',
+    contents:     './',
     releaseDraft: true,
     testScript:   'test',
     '2fa':        true,
