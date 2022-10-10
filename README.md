@@ -1,4 +1,4 @@
-Prometheus: Hetzner Service Discovery
+Prometheus: Hetzner Service Discovery ![Current Release](https://img.shields.io/npm/v/@matchory/hetzner-cloud-prometheus-sd/latest) ![License](https://img.shields.io/npm/l/@matchory/hetzner-cloud-prometheus-sd) [![Build](https://github.com/matchory/hetzner-cloud-prometheus-sd/actions/workflows/main.yaml/badge.svg)](https://github.com/matchory/hetzner-cloud-prometheus-sd/actions/workflows/main.yaml) ![Weekly Downloads](https://img.shields.io/npm/dw/@matchory/hetzner-cloud-prometheus-sd) ![Docker Build Status](https://img.shields.io/docker/cloud/build/matchory/hetzner-cloud-prometheus-sd)
 =====================================
 > A server to provide automatic node discovery for Hetzner Cloud to Prometheus via HTTP service discovery.
 
