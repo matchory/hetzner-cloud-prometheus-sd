@@ -1,5 +1,5 @@
 {
-    "name": "hetzner-cloud-prometheus-sd",
+    "name": "@matchory/hetzner-cloud-prometheus-sd",
     "version": "0.0.0",
     "description": "A simple web server exposing Hetzner cloud instances for consumption by the Prometheus HTTP service discovery.",
     "tags": [
