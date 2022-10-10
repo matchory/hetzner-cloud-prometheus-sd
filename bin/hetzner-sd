@@ -1,5 +1,0 @@
-#!/bin/sh
-':' // ; cat "$0" | node --input-type=module - $@ ; exit $?
-
-//noinspection JSFileReferences
-import('./dist/index.mjs');

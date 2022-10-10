@@ -18,7 +18,7 @@
     "main": "dist/index.mjs",
     "module": "dist/index.mjs",
     "bin": {
-        "hetzner-sd": "bin/hetzner-sd"
+        "hetzner-sd": "dist/index.mjs"
     },
     "devDependencies": {
         "typescript": "^4.8.4"
@@ -34,8 +34,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "dev": "tsc && bin/hetzner-sd",
-        "serve": "node dist/",
+        "dev": "tsc && node dist/index.mjs",
+        "serve": "node dist/index.mjs",
         "check": "tsc --noEmit --pretty",
         "release": "npx np@latest"
     },
