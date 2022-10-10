@@ -47,6 +47,8 @@
         "bin",
         "src",
         "dist",
-        "README.md"
+        "!dist/.tsbuildinfo",
+        "README.md",
+        "LICENSE"
     ]
 }
