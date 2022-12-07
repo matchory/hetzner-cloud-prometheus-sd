@@ -49,15 +49,17 @@ export class Config
     }
 
     get apiToken(): string {
-        return this.args[ 'api-token' ] as unknown as string;
+        return this.args[ 'api-token' ]
+               || this.args[ 'api-token-file' ]
+               || '';
     }
 
     get authBearer(): string | undefined {
-        return this.args[ 'auth-bearer' ] as unknown as string | undefined;
+        return this.args[ 'auth-bearer' ] || this.args[ 'auth-bearer-file' ];
     }
 
     get authBasic(): string | undefined {
-        return this.args[ 'auth-basic' ] as unknown as string | undefined;
+        return this.args[ 'auth-basic' ] || this.args[ 'auth-basic-file' ];
     }
 
     get authEnabled(): boolean {
@@ -137,39 +139,57 @@ export const options = {
     },
     'api-token': {
         string: true,
-        demandOption: true,
         alias: 't',
-        default: (): string | undefined => loadSecret(
-            environment.HETZNER_SD_API_TOKEN_FILE,
-        ),
+        conflicts: 'api-token-file',
+        default: undefined,
         requiresArg: true,
         description: 'API token obtained from Hetzner Cloud',
+    },
+    'api-token-file': {
+        string: true,
+        conflicts: 'api-token',
+        coerce: ( path: string ) => loadSecret( path ),
+        default: undefined,
+        requiresArg: true,
+        description: 'File containing the API token obtained from Hetzner Cloud',
     },
     'auth-bearer': {
         string: true,
         alias: 'a',
-        default: (): string | undefined => loadSecret(
-            environment.HETZNER_SD_AUTH_BEARER_FILE,
-        ),
         requiresArg: true,
-        conflicts: 'auth-basic',
+        default: undefined,
+        conflicts: [ 'auth-bearer-file', 'auth-basic', 'auth-basic-file' ],
         description: 'Enables bearer token authentication by checking the ' +
                      'Authorization header on incoming requests against the ' +
                      'given value. Incompatible with --auth-basic',
     },
+    'auth-bearer-file': {
+        string: true,
+        conflicts: [ 'auth-bearer', 'auth-basic', 'auth-basic-file' ],
+        coerce: ( path: string ) => loadSecret( path ),
+        default: undefined,
+        requiresArg: true,
+        description: 'File containing the bearer token',
+    },
     'auth-basic': {
         string: true,
         alias: 'A',
-        default: (): string => loadSecret(
-            environment.HETZNER_SD_AUTH_BASIC_FILE,
-        ) || '',
+        default: undefined,
+        conflicts: [ 'auth-basic-file', 'auth-bearer', 'auth-bearer-file' ],
         requiresArg: true,
-        conflicts: 'auth-bearer',
         description: 'Enables basic authentication by checking the ' +
                      'Authorization header on incoming requests against the ' +
                      'given credentials. Provide username and password ' +
                      'separated by a colon, e.g. "user:pass". Incompatible ' +
                      'with --auth-bearer',
+    },
+    'auth-basic-file': {
+        string: true,
+        conflicts: [ 'auth-basic', 'auth-bearer', 'auth-bearer-file' ],
+        coerce: ( path: string ) => loadSecret( path ),
+        default: undefined,
+        requiresArg: true,
+        description: 'File containing the basic auth credentials',
     },
     hostname: {
         string: true,
