@@ -57,10 +57,18 @@ export class Config
     }
 
     get hetznerApiToken(): string {
-        return (
-            this.args[ 'hetzner-api-token' ]
-            || this.env.HETZNER_SD_API_TOKEN
-        ) as string;
+        if ( this.args[ 'hetzner-api-token' ] ) {
+            return this.args[ 'hetzner-api-token' ];
+        }
+
+        if ( this.env.HETZNER_SD_API_TOKEN_FILE ) {
+            return readFileSync(
+                this.env.HETZNER_SD_API_TOKEN_FILE,
+                'utf-8',
+            ).trim();
+        }
+
+        return this.env.HETZNER_SD_API_TOKEN as string;
     }
 
     get refreshInterval(): number {
@@ -154,6 +162,7 @@ export const options = {
         string: true,
         demandOption: true,
         alias: 't',
+        default: null,
         requiresArg: true,
         description: 'API token obtained from Hetzner Cloud',
     },
