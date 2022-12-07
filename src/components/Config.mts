@@ -61,14 +61,36 @@ export class Config
             return this.args[ 'hetzner-api-token' ];
         }
 
-        if ( this.env.HETZNER_SD_API_TOKEN_FILE ) {
-            return readFileSync(
-                this.env.HETZNER_SD_API_TOKEN_FILE,
-                'utf-8',
-            ).trim();
+        return loadEnvFile(
+            this.env.HETZNER_SD_API_TOKEN,
+            this.env.HETZNER_SD_API_TOKEN_FILE,
+        ) as string;
+    }
+
+    get authBearer(): string | undefined {
+        if ( this.args[ 'auth-bearer' ] ) {
+            return this.args[ 'auth-bearer' ];
         }
 
-        return this.env.HETZNER_SD_API_TOKEN as string;
+        return loadEnvFile(
+            this.env.HETZNER_SD_AUTH_BEARER,
+            this.env.HETZNER_SD_AUTH_BEARER_FILE,
+        );
+    }
+
+    get authBasic(): string | undefined {
+        if ( this.args[ 'auth-basic' ] ) {
+            return this.args[ 'auth-basic' ];
+        }
+
+        return loadEnvFile(
+            this.env.HETZNER_SD_AUTH_BASIC,
+            this.env.HETZNER_SD_AUTH_BASIC_FILE,
+        );
+    }
+
+    get authEnabled(): boolean {
+        return !!( this.authBearer || this.authBasic );
     }
 
     get refreshInterval(): number {
@@ -166,6 +188,28 @@ export const options = {
         requiresArg: true,
         description: 'API token obtained from Hetzner Cloud',
     },
+    'auth-bearer': {
+        string: true,
+        alias: 'a',
+        default: undefined,
+        requiresArg: true,
+        conflicts: 'auth-basic',
+        description: 'Enables bearer token authentication by checking the ' +
+                     'Authorization header on incoming requests against the ' +
+                     'given value. Incompatible with --auth-basic',
+    },
+    'auth-basic': {
+        string: true,
+        alias: 'A',
+        default: undefined,
+        requiresArg: true,
+        conflicts: 'auth-bearer',
+        description: 'Enables basic authentication by checking the ' +
+                     'Authorization header on incoming requests against the ' +
+                     'given credentials. Provide username and password ' +
+                     'separated by a colon, e.g. "user:pass". Incompatible ' +
+                     'with --auth-bearer',
+    },
     hostname: {
         string: true,
         alias: 'h',
@@ -184,7 +228,8 @@ export const options = {
         alias: 'H',
         boolean: true,
         default: false,
-        description: 'Whether to start an HTTPS server. Requires additional configuration.',
+        description: 'Whether to start an HTTPS server. Requires additional ' +
+                     'configuration.',
     },
     'm-tls-ca': {
         string: true,
@@ -269,6 +314,29 @@ function parseConfigFile( path: string ): ConfigFileContent {
     }
 
     return parsed;
+}
+
+const pathCache = new Map<string, string>();
+
+function loadEnvFile(
+    key: string | undefined,
+    path: string | undefined,
+): string | undefined {
+    if ( !key && !path ) {
+        return undefined;
+    }
+
+    if ( path ) {
+        if ( !pathCache.has( path ) ) {
+            const value = readFileSync( path, 'utf-8' );
+
+            pathCache.set( path, value.trimEnd() );
+        }
+
+        return pathCache.get( path );
+    }
+
+    return key;
 }
 
 type ConfigFileContent = Omit<{

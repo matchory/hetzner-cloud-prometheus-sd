@@ -5,6 +5,7 @@ import client, { Histogram } from 'prom-client';
 import { ClosedConnectionError } from '../errors/ClosedConnectionError.mjs';
 import { MethodNotAllowedError } from '../errors/MethodNotAllowedError.mjs';
 import { NotFoundError } from '../errors/NotFoundError.mjs';
+import { UnauthorizedError } from '../errors/UnauthorizedError.mjs';
 import { error, ErrorRequestListener } from '../routeHandlers/error.mjs';
 import { metrics } from '../routeHandlers/metrics.mjs';
 import { targets } from '../routeHandlers/targets.mjs';
@@ -107,19 +108,68 @@ export class WebServer
                     'application/json; charset=utf-8',
                 );
 
-                // Reject any request methods but GET (or HEAD)
-                if (
-                    ![ 'GET', 'HEAD' ].includes( request.method?.toUpperCase() || '' ) &&
-                    this.errorHandler
-                ) {
-                    return this.errorHandler(
-                        request,
-                        response,
-                        new MethodNotAllowedError( [ 'GET' ] ),
-                    );
-                }
-
                 try {
+                    // Reject any request methods but GET (or HEAD)
+                    if ( ![ 'GET', 'HEAD' ].includes(
+                        request.method?.toUpperCase() || '',
+                    ) ) {
+                        throw new MethodNotAllowedError( [ 'GET' ] );
+                    }
+
+                    if ( this.config.authEnabled ) {
+                        const header = request.headers.authorization;
+
+                        if ( this.config.authBearer ) {
+                            if ( !header ) {
+                                throw new UnauthorizedError( [
+                                    'Bearer error="Token missing"',
+                                ] );
+                            }
+
+                            if ( !header.startsWith( 'Bearer ' ) ) {
+                                throw new UnauthorizedError( [
+                                    'Bearer error="Unrecognized authentication scheme"',
+                                ] );
+                            }
+
+                            const token = header.replace( 'Bearer ', '' );
+
+                            if ( token !== this.config.authBearer ) {
+                                throw new UnauthorizedError( [
+                                    'Bearer error="Invalid token"',
+                                ] );
+                            }
+                        }
+
+                        if ( this.config.authBasic ) {
+                            if ( !header || !header.startsWith( 'Basic ' ) ) {
+                                throw new UnauthorizedError( [
+                                    'Basic realm="Hetzner SD", charset="UTF-8"',
+                                ] );
+                            }
+
+                            const [ username, password ] = Buffer
+                            .from(
+                                header.replace( 'Basic ', '' ),
+                                'base64',
+                            )
+                            .toString()
+                            .split( ':', 2 );
+
+                            if ( !username || !password ) {
+                                throw new UnauthorizedError( [
+                                    'Basic realm="Hetzner SD", charset="UTF-8"',
+                                ] );
+                            }
+
+                            if ( `${ username }:${ password }` !== this.config.authBasic ) {
+                                throw new UnauthorizedError( [
+                                    'Basic realm="Hetzner SD", charset="UTF-8"',
+                                ] );
+                            }
+                        }
+                    }
+
                     switch ( path ) {
                         case this.config.metricsEndpoint:
                             return this.metricsHandler && await this.metricsHandler(

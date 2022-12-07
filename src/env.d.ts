@@ -11,6 +11,10 @@ declare global
             HETZNER_SD_CONFIG_FILE: string | undefined;
             HETZNER_SD_API_TOKEN: string | undefined;
             HETZNER_SD_API_TOKEN_FILE: string | undefined;
+            HETZNER_SD_AUTH_BEARER: string | undefined;
+            HETZNER_SD_AUTH_BEARER_FILE: string | undefined;
+            HETZNER_SD_AUTH_BASIC: string | undefined;
+            HETZNER_SD_AUTH_BASIC_FILE: string | undefined;
             HETZNER_SD_DEBUG: string | undefined;
             HETZNER_SD_HOSTNAME: string | undefined;
             HETZNER_SD_HTTPS: string | undefined;
