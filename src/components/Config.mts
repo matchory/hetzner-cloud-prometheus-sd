@@ -31,17 +31,11 @@ export class Config
     }
 
     get hostname(): string {
-        return this.args.hostname
-               || this.env.HETZNER_SD_HOSTNAME
-               || Config.DEFAULT_HOSTNAME;
+        return this.args.hostname;
     }
 
     get port(): number {
-        return Number(
-            this.args.port
-            || this.env.HETZNER_SD_PORT
-            || Config.DEFAULT_PORT,
-        );
+        return Number( this.args.port );
     }
 
     get https(): boolean {
@@ -51,42 +45,19 @@ export class Config
     }
 
     get mTlsCa(): string | null {
-        return this.args[ 'm-tls-ca' ]
-               || this.env.HETZNER_SD_MTLS_CA
-               || null;
+        return this.args[ 'm-tls-ca' ] || null;
     }
 
-    get hetznerApiToken(): string {
-        if ( this.args[ 'hetzner-api-token' ] ) {
-            return this.args[ 'hetzner-api-token' ];
-        }
-
-        return loadEnvFile(
-            this.env.HETZNER_SD_API_TOKEN,
-            this.env.HETZNER_SD_API_TOKEN_FILE,
-        ) as string;
+    get apiToken(): string {
+        return this.args[ 'api-token' ] as unknown as string;
     }
 
     get authBearer(): string | undefined {
-        if ( this.args[ 'auth-bearer' ] ) {
-            return this.args[ 'auth-bearer' ];
-        }
-
-        return loadEnvFile(
-            this.env.HETZNER_SD_AUTH_BEARER,
-            this.env.HETZNER_SD_AUTH_BEARER_FILE,
-        );
+        return this.args[ 'auth-bearer' ] as unknown as string | undefined;
     }
 
     get authBasic(): string | undefined {
-        if ( this.args[ 'auth-basic' ] ) {
-            return this.args[ 'auth-basic' ];
-        }
-
-        return loadEnvFile(
-            this.env.HETZNER_SD_AUTH_BASIC,
-            this.env.HETZNER_SD_AUTH_BASIC_FILE,
-        );
+        return this.args[ 'auth-basic' ] as unknown as string | undefined;
     }
 
     get authEnabled(): boolean {
@@ -94,43 +65,27 @@ export class Config
     }
 
     get refreshInterval(): number {
-        return Number(
-            this.args[ 'refresh-interval' ]
-            || this.env.HETZNER_SD_REFRESH_INTERVAL
-            || Config.DEFAULT_REFRESH_INTERVAL,
-        );
+        return Number( this.args[ 'refresh-interval' ] );
     }
 
     get metricsEndpoint(): string {
-        return this.args[ 'metrics-endpoint' ]
-               || this.env.HETZNER_SD_METRICS_ENDPOINT
-               || Config.DEFAULT_METRICS_ENDPOINT;
+        return this.args[ 'metrics-endpoint' ];
     }
 
     get nodePort(): number {
-        return Number(
-            this.args[ 'node-port' ]
-            || this.env.HETZNER_SD_NODE_PORT
-            || Config.DEFAULT_NODE_PORT,
-        );
+        return Number( this.args[ 'node-port' ] );
     }
 
     get nodeNetwork(): string | null {
-        return this.args[ 'node-network' ]
-               || this.env.HETZNER_SD_NODE_NETWORK
-               || null;
+        return this.args[ 'node-network' ];
     }
 
     get nodeLabelPrefix(): string {
-        return this.args[ 'node-label-prefix' ]
-               || this.env.HETZNER_SD_NODE_LABEL_PREFIX
-               || Config.DEFAULT_NODE_LABEL_PREFIX;
+        return this.args[ 'node-label-prefix' ];
     }
 
     get logLevel(): LogLevel {
-        return this.args[ 'log-level' ]
-               || this.env.HETZNER_SD_LOG_LEVEL
-               || Config.DEFAULT_LOG_LEVEL;
+        return this.args[ 'log-level' ];
     }
 
     get debug(): boolean {
@@ -140,7 +95,7 @@ export class Config
     }
 
     public validate(): void {
-        if ( !this.hetznerApiToken ) {
+        if ( !this.apiToken ) {
             throw new Error( 'Bad configuration: Missing Hetzner API token' );
         }
 
@@ -180,18 +135,22 @@ export const options = {
         config: true,
         configParser: parseConfigFile,
     },
-    'hetzner-api-token': {
+    'api-token': {
         string: true,
         demandOption: true,
         alias: 't',
-        default: null,
+        default: (): string | undefined => loadSecret(
+            environment.HETZNER_SD_API_TOKEN_FILE,
+        ),
         requiresArg: true,
         description: 'API token obtained from Hetzner Cloud',
     },
     'auth-bearer': {
         string: true,
         alias: 'a',
-        default: undefined,
+        default: (): string | undefined => loadSecret(
+            environment.HETZNER_SD_AUTH_BEARER_FILE,
+        ),
         requiresArg: true,
         conflicts: 'auth-basic',
         description: 'Enables bearer token authentication by checking the ' +
@@ -201,7 +160,9 @@ export const options = {
     'auth-basic': {
         string: true,
         alias: 'A',
-        default: undefined,
+        default: (): string => loadSecret(
+            environment.HETZNER_SD_AUTH_BASIC_FILE,
+        ) || '',
         requiresArg: true,
         conflicts: 'auth-bearer',
         description: 'Enables basic authentication by checking the ' +
@@ -274,7 +235,7 @@ export const options = {
         string: true,
         choices: logLevels,
         requiresArg: true,
-        default: 'debug' as LogLevel,
+        default: Config.DEFAULT_LOG_LEVEL,
         description: 'Controls the amount of log messages printed.',
     },
     debug: {
@@ -318,25 +279,18 @@ function parseConfigFile( path: string ): ConfigFileContent {
 
 const pathCache = new Map<string, string>();
 
-function loadEnvFile(
-    key: string | undefined,
-    path: string | undefined,
-): string | undefined {
-    if ( !key && !path ) {
+function loadSecret( path: string | undefined ): string | undefined {
+    if ( !path ) {
         return undefined;
     }
 
-    if ( path ) {
-        if ( !pathCache.has( path ) ) {
-            const value = readFileSync( path, 'utf-8' );
+    if ( !pathCache.has( path ) ) {
+        const value = readFileSync( path, 'utf-8' );
 
-            pathCache.set( path, value.trimEnd() );
-        }
-
-        return pathCache.get( path );
+        pathCache.set( path, value.trimEnd() );
     }
 
-    return key;
+    return pathCache.get( path );
 }
 
 type ConfigFileContent = Omit<{

@@ -24,7 +24,7 @@ export class DiscoveryWorker
     public constructor( config: Config, dataStore: DataStore<Server[]> ) {
         this.config    = config;
         this.dataStore = dataStore;
-        this.client    = new HetznerApiClient( config.hetznerApiToken );
+        this.client    = new HetznerApiClient( config.apiToken );
 
         this.syncDurationMetric = new client.Histogram( {
             help: 'Duration of synchronisation with the Hetzner API',

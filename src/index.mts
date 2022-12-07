@@ -11,13 +11,14 @@ import { setup } from './logging.mjs';
 const argv: string[] = process.argv.slice( 2 );
 const input          = yargs( argv )
 .options( options )
+.env('HETZNER_SD')
 .strict()
 .parseSync();
 
 main( input ).catch( error => console.error( 'Unexpected error:', error ) );
 
-async function main( input: ProcessArgs ): Promise<void> {
-    const config = new Config( input );
+async function main( processedInput: ProcessArgs ): Promise<void> {
+    const config = new Config( processedInput );
 
     try {
         config.validate();
