@@ -19,4 +19,4 @@ LABEL org.opencontainers.image.description="A simple web server exposing Hetzner
 
 WORKDIR /app
 COPY --from=builder ./build .
-ENTRYPOINT ["./bin/hetzner-sd"]
+ENTRYPOINT ["./bin/hetzner-sd.mjs"]
