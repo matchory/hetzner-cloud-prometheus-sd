@@ -21,7 +21,7 @@
         "hetzner-sd": "bin/hetzner-sd.mjs"
     },
     "devDependencies": {
-        "typescript": "^4.8.4"
+        "typescript": "^5.0.2"
     },
     "dependencies": {
         "@types/node": "^18.8.2",
