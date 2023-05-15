@@ -24,7 +24,7 @@
         "typescript": "^5.0.2"
     },
     "dependencies": {
-        "@types/node": "^18.8.2",
+        "@types/node": "^20.1.4",
         "@types/yargs": "^17.0.13",
         "ip-range-check": "^0.2.0",
         "node-fetch": "^3.2.10",
