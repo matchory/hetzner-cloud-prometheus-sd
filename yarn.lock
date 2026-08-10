@@ -191,16 +191,16 @@ get-east-asian-width@^1.0.0, get-east-asian-width@^1.5.0:
   integrity sha512-QRbvDIbx6YklUe6RxeTeleMR0yv3cYH6PsPZHcnVn7xv7zO1BHN8r0XETu8n6Ye3Q+ahtSarc3WgtNWmehIBfA==
 
 ip-range-check@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/ip-range-check/-/ip-range-check-0.2.0.tgz#e67f126c8fb36c8f11d4c07d7924b7e364365157"
-  integrity sha512-oaM3l/3gHbLlt/tCWLvt0mj1qUaI+STuRFnUvARGCujK9vvU61+2JsDpmkMzR4VsJhuFXWWgeKKVnwwoFfzCqw==
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/ip-range-check/-/ip-range-check-0.2.1.tgz#1c4b4c5d7dec241d31c836577af26ca3d47d4060"
+  integrity sha512-qm1B6kp3gKxUoRiNW1ZJZcWGAGWQSfg3CxCTugWNXb+p6iymUQ2RBHUvObzh0QNiDyjoq6XsGiemBru1RMlNkw==
   dependencies:
-    ipaddr.js "^1.0.1"
+    ipaddr.js "^2.5.0"
 
-ipaddr.js@^1.0.1:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
-  integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
+ipaddr.js@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-2.5.0.tgz#7d4b6c39f9392fb61cf807de6e425e22c10e061f"
+  integrity sha512-aq+t5NAc+cS6rZQQVWC2x98CPqGtKKTMDd4Gaodv0wShnItdKg/51djkGJ1hqH+Oy0ivDftCbSLCQob8zso01w==
 
 node-domexception@^1.0.0:
   version "1.0.0"
